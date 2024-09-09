@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Welcome to the Speech App</h1>
+    <h2>Text-to-Speech</h2>
+    <form id="ttsForm">
+        <label for="text">Enter text:</label>
+        <input type="text" id="text" name="text">
+        <button type="submit">Convert to Speech</button>
+    </form>
+    <div id="ttsResult"></div>
+
+    <h2>Speech-to-Text</h2>
+    <form id="sttForm" enctype="multipart/form-data">
+        <label for="audio">Upload audio file:</label>
+        <input type="file" id="audio" name="audio" accept="audio/*">
+        <button type="submit">Convert to Text</button>
+    </form>
+    <div id="sttResult"></div>
+
+    <script>
+        // Text-to-Speech (TTS)
+        $('#ttsForm').on('submit', function(e) {
+            e.preventDefault();
+            const text = $('#text').val();
+            $.ajax({
+                type: 'POST',
+                url: '/api/text-to-speech/',
+                data: JSON.stringify({ 'text': text }),
+            contentType: 'application/json',
+            xhrFields: {
+            responseType: 'blob'  // Expect binary data
+        },
+        success: function(response) {
+            const url = URL.createObjectURL(response);
+            const audio = new Audio(url);  // Create an audio element
+            audio.play();  // Play the audio
+            $('#ttsResult').html('<p>Speech generated successfully.</p>');
+        },
+        error: function(xhr) {
+            $('#ttsResult').html('<p>Error: ' + xhr.responseJSON.error + '</p>');
+        }
+    });
+});
+
+
+        // Speech-to-Text (STT)
+        $('#sttForm').on('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            const audioFile = $('#audio')[0].files[0];
+            formData.append('audio', audioFile);
+            $.ajax({
+                type: 'POST',
+                url: '/api/speech-to-text/',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    $('#sttResult').html('<p>Converted Text: ' + response.text + '</p>');
+                },
+                error: function(xhr) {
+                    $('#sttResult').html('<p>Error: ' + xhr.responseJSON.error + '</p>');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
