@@ -78,10 +78,16 @@ WSGI_APPLICATION = 'speech_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'TTS_app',        # Replace with your database name
+        'USER': 'root',    # Replace with your database user
+        'PASSWORD': 'rooty',    # Replace with your database password
+        'HOST': 'localhost',         # Or use the IP address of your database
+        'PORT': '3306',              # Default MySQL port
     }
 }
+
+
 
 
 # Password validation
